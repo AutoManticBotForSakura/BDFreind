@@ -41,8 +41,8 @@ def url_request(url: str, type: str):
             # strtemp = './'+type+'/'+ str(info_name_list[i]) + '    ' + str(info_age_list[i]) + '.jpg'
             if (not (os.path.exists('./' + type + '/' + str(list_id) + str(name_list[i].text) + '    ' + str(
                     age_list[i].text) + '.' + pic_type))):
-                with open('./' + type + '/' + str(list_id) + '    ' + str(name_list[i].text) + '    ' + str(
-                        age_list[i].text) + '.' + pic_type, 'wb') as f:
+                with open(('./' + type + '/' + str(list_id) + '    ' + str(name_list[i].text) + '    ' + str(
+                        age_list[i].text) + '.' + pic_type).replace('*', ''), 'wb') as f:
                     f.write(pic_res.content)
                 with open('./' + type + '/list.txt', 'a', encoding='utf-8') as f:
                     info_page = page_list[i].a.attrs["href"]
@@ -72,9 +72,9 @@ def url_request(url: str, type: str):
 if __name__ == '__main__':
     print("程序开始运行，优先为male")
     b_url = "https://xn--ypk-dickintheworld-com-d678ae37jzkza746y.bd-friend.com/?type=0"
-    d_url = "https://xn--ypk-dickintheworld-com-d678ae37jzkza746y.bd-friend.com/?type=1"
-    while b_url:
-        b_url = url_request(b_url, "female")
+    d_url = "https://xn--ypk-dickintheworld-com-d678ae37jzkza746y.bd-friend.com/?type=1&page=21"
+    #while b_url:
+    #    b_url = url_request(b_url, "female")
     while d_url:
         d_url = url_request(d_url, "male")
     print("程序结束")
