@@ -57,6 +57,8 @@ def init(proxy_url: str, download_location: str):
             time.sleep(1)
         page += 1
 
+    print("爬虫完成")
+
 
 def get_content(uri, proxy_url, download_location: str):
     """
@@ -92,10 +94,18 @@ def get_content(uri, proxy_url, download_location: str):
         image_list = soup.select('#viewer.mybox>div')  # 排除第一个
         print('图片列表获取完毕')
 
-        save_url = download_location + nick_name + '/'
+        (province, city) = (location.split('，')[0], location.split('，')[1])
 
-        if not os.path.exists(download_location + nick_name):
-            os.mkdir(download_location + nick_name)
+        save_url = download_location + province + '/' + city + '/' + nick_name + '/'
+
+        if not os.path.exists(download_location + province):
+            os.mkdir(download_location + province)
+
+        if not os.path.exists(download_location + province + '/' + city):
+            os.mkdir(download_location + province + '/' + city)
+
+        if not os.path.exists(download_location + province + '/' + city + '/' + nick_name):
+            os.mkdir(download_location + province + '/' + city + '/' + nick_name)
 
         with open(save_url + nick_name + '.txt', 'a', encoding='utf-8') as f:
             f.write(
@@ -107,9 +117,11 @@ def get_content(uri, proxy_url, download_location: str):
             image_bytes = requests.get(image_url, proxies=proxies).content
             # 存储到本地
             if not os.path.exists(save_url + nick_name + str(i) + '.' + image_url.split('.')[-1]):
-                with open(save_url + nick_name + str(i) + '.' + image_url.split('.')[-1], 'wb') as f:
+                with open(save_url + nick_name + str(i) + '张.' + image_url.split('.')[-1], 'wb') as f:
                     f.write(image_bytes)
                     print(nick_name + '第' + str(i) + '张图片保存完成')
+                    # 用于爬虫休眠
+                    time.sleep(500)
 
     except Exception as e:
         print('在获取' + uri + '时发生错误', e)
