@@ -38,7 +38,7 @@ def init(proxy_url: str, download_location: str):
 
     # 循环获取内容
     while page <= end_page:
-        print('正在爬取第' + str(page) + '页')
+        print('共' + str(end_page) + '页,正在爬取第' + str(page) + '页')
         # 定义基址base_url
         base_url = 'https://xn--ypk-dickintheworld-com-d678ae37jzkza746y.bd-friend.com/?sort=1&type=0&page=' + str(page)
 
@@ -92,7 +92,7 @@ def get_content(uri, proxy_url, download_location: str):
             soup.select('#viewer > div:nth-child(1) > li > p:nth-child(7)')[0].text.split("：")[1]
         print(nick_name + '基本信息获取成功')
         image_list = soup.select('#viewer.mybox>div')  # 排除第一个
-        print('图片列表获取完毕')
+        # print('图片列表获取完毕')
 
         (province, city) = (location.split('，')[0], location.split('，')[1])
 
@@ -107,27 +107,27 @@ def get_content(uri, proxy_url, download_location: str):
         if not os.path.exists(download_location + province + '/' + city + '/' + nick_name):
             os.mkdir(download_location + province + '/' + city + '/' + nick_name)
 
-        with open(save_url + nick_name + '.txt', 'a', encoding='utf-8') as f:
-            f.write(
-                "昵称:" + nick_name + '\n年龄:' + age + '\n地区:' + location + '\n身高:' + height + '\n体重:' + weight)
-        print(nick_name + '基本信息保存完成')
+        if not os.path.exists(save_url + nick_name + '.txt'):
+            with open(save_url + nick_name + '.txt', 'a', encoding='utf-8') as f:
+                f.write(
+                    "昵称:" + nick_name + '\n年龄:' + age + '\n地区:' + location + '\n身高:' + height + '\n体重:' + weight)
+            print(nick_name + '基本信息保存完成')
 
         for i in range(1, len(image_list)):
             image_url = soup.select('#viewer.mybox>div')[i].select('img')[0].get('src')
             image_bytes = requests.get(image_url, proxies=proxies).content
             # 存储到本地
-            if not os.path.exists(save_url + nick_name + str(i) + '.' + image_url.split('.')[-1]):
-                with open(save_url + nick_name + str(i) + '张.' + image_url.split('.')[-1], 'wb') as f:
-                    f.write(image_bytes)
-                    print(nick_name + '第' + str(i) + '张图片保存完成')
-                    # 用于爬虫休眠
-                    time.sleep(500)
-
+            with open(save_url + nick_name + str(i) + '张.' + image_url.split('.')[-1], 'wb') as f:
+                f.write(image_bytes)
+                f.close()
+                print(nick_name + '第' + str(i) + '张图片保存完成')
+                # 用于爬虫休眠
+                time.sleep(0.5)
     except Exception as e:
         print('在获取' + uri + '时发生错误', e)
 
 
 if __name__ == '__main__':
     proxy = input('请输入代理ip或直接回车不开启代理: ')  # 用户选择是否需要代理,直接回车不开启代理
-    download_location = input('请输入保存图片的文件夹路径: ')
+    download_location = input('请输入保存图片的文件夹路径(默认为./downloads/): ')  # 默认为./downloads/
     init(proxy, download_location)  # 调用初始化函数
